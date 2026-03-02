@@ -11,13 +11,16 @@ from models.audit_log import AuditLog
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional
 import uuid
-from utils.security import (
+from core.security import (
     verify_password, create_access_token,
     create_refresh_token, decode_token,
     ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 )
 
-router = APIRouter(tags=["Auth"])
+router = APIRouter(
+        prefix="/auth", 
+        tags=["Auth routes"]
+    )
 
 ########## For testing using the documentation ############
 
