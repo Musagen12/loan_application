@@ -6,3 +6,7 @@ aiofiles
 python-multipart
 python-dotenv
 pymysql
+urllib3
+pyOpenSSL
+requests
+logging

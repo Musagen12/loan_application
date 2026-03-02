@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from schemas.sms_schema import SMSRequest
+from core.sending_sms import send_sms
 
 router = APIRouter(
         prefix="/sms", 
