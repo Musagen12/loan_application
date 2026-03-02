@@ -10,3 +10,4 @@ urllib3
 pyOpenSSL
 requests
 logging
+alembic
