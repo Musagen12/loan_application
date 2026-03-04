@@ -46,10 +46,6 @@ def list_guarantors(session: Session = Depends(get_session)):
             client_schema.Guarantor(
                 guarantor_id=guarantor.guarantor_id,
                 client_id=guarantor.client_id,
-                # client=client_schema.Client_Lite(
-                #     client_id=guarantor.client.client_id,
-                #     client_name=guarantor.client.client_name
-                # ) if guarantor.client else None,
                 guarantor_name=guarantor.guarantor_name,
                 national_id_number=guarantor.national_id_number,
                 guarantor_phone_number=guarantor.guarantor_phone_number,
@@ -79,24 +75,6 @@ def get_guarantor(guarantor_id: str, session: Session = Depends(get_session)):
 
     return guarantor
 
-# @router.post("/", response_model=client_schema.Guarantor)
-# def create_guarantor(
-#     guarantor_data: client_schema.Guarantor_Base,
-#     session: Session = Depends(get_session),
-# ):
-
-#     guarantor = client_model.Guarantor(**guarantor_data.model_dump())
-
-#     try:
-#         session.add(guarantor)
-#         session.commit()
-#         session.refresh(guarantor)
-#         return guarantor
-
-#     except IntegrityError:
-#         session.rollback()
-#         raise HTTPException(400, "Duplicate national ID number")
-
 @router.post("/", response_model=client_schema.Guarantor)
 def create_guarantor(
     guarantor_data: client_schema.Guarantor_Base,
@@ -124,24 +102,6 @@ def create_guarantor(
     except IntegrityError:
         session.rollback()
         raise HTTPException(status_code=400, detail="Duplicate national ID number")
-
-# @router.put("/{guarantor_id}", response_model=client_schema.Guarantor)
-# def update_client(guarantor_id: str, guarantor_update: client_schema.Guarantor_Base, session: Session = Depends(get_session)):
-#     guarantor = session.get(client_model.Guarantor, guarantor_id)
-#     if not guarantor:
-#         raise HTTPException(status_code=404, detail="Guarantor not found")
-
-#     for key, value in guarantor_update.dict().items():
-#         setattr(guarantor, key, value)
-
-#     try:
-#         session.commit()
-#         session.refresh(guarantor)
-#     except IntegrityError:
-#         session.rollback()
-#         raise HTTPException(status_code=400, detail="Duplicate national ID number or other constraint violated")
-
-#     return guarantor
 
 @router.put("/{guarantor_id}", response_model=client_schema.Guarantor)
 def update_guarantor(guarantor_id: str, guarantor_update: client_schema.Guarantor_Base, session: Session = Depends(get_session)):
@@ -177,36 +137,6 @@ def update_guarantor(guarantor_id: str, guarantor_update: client_schema.Guaranto
         print(f"Guarantor SMS failed: {str(e)}")
 
     return {**guarantor.__dict__, "sms_status": sms_status}
-
-# @router.delete("/{guarantor_id}")
-# def delete_client(guarantor_id: str, session: Session = Depends(get_session)):
-#     guarantor = session.get(client_model.Guarantor, guarantor_id)
-#     if not guarantor:
-#       raise HTTPException(status_code=404, detail="guarantor not found")
-
-#     session.delete(guarantor)
-#     session.commit()
-#     return {"message": "Deleted Guarantor"}
-
-# @router.delete("/{guarantor_id}")
-# def delete_guarantor(guarantor_id: str, session: Session = Depends(get_session)):
-#     guarantor = session.get(client_model.Guarantor, guarantor_id)
-#     if not guarantor:
-#         raise HTTPException(status_code=404, detail="Guarantor not found")
-
-#     session.delete(guarantor)
-#     session.commit()
-
-#     # Send SMS to guarantor
-#     sms_status = {"guarantor_sms": False}
-#     try:
-#         message = f"Hello {guarantor.guarantor_name}, you have been removed as a guarantor for {guarantor.client.client_name}'s account."
-#         result = send_sms(guarantor.guarantor_phone_number, message)
-#         sms_status["guarantor_sms"] = result.get("status") != "failed"
-#     except Exception as e:
-#         print(f"Guarantor SMS failed: {str(e)}")
-
-#     return {"message": "Deleted guarantor", "sms_status": sms_status}
 
 @router.delete("/{guarantor_id}")
 def delete_guarantor(guarantor_id: str, session: Session = Depends(get_session)):
