@@ -11,6 +11,4 @@ pyOpenSSL
 requests
 logging
 alembic
-python-jose[cryptography]
-passlib
-bcrypt
+pwdlib[argon2]

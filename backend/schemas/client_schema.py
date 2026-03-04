@@ -60,7 +60,6 @@ class Client_Base(BaseModel):
     client_phone_number: str
     client_business_name: str
     client_residence: str
-    password: str
     date_of_birth: date
     next_of_kin_name: str
     next_of_kin_contact: str
@@ -84,6 +83,32 @@ class Client_Base(BaseModel):
 class Client_Lite(BaseModel):
     client_id: str
     client_name: str
+
+    class Config:
+        from_attributes = True
+
+class Client_Request(BaseModel):
+    client_name: str
+    national_id_number: str
+    client_phone_number: str
+    client_business_name: str
+    client_residence: str
+    password: str
+    date_of_birth: date
+    next_of_kin_name: str
+    next_of_kin_contact: str
+    marital_status: MaritalStatus
+    number_of_children: int
+
+    @field_validator("client_phone_number", "next_of_kin_contact")
+    @classmethod
+    def validate_phone(cls, v):
+        return normalize_kenyan_phone(v)
+
+    @field_validator("national_id_number")
+    @classmethod
+    def validate_national_id(cls, v):
+        return national_id_number_size(v)
 
     class Config:
         from_attributes = True
