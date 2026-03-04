@@ -11,3 +11,6 @@ pyOpenSSL
 requests
 logging
 alembic
+python-jose[cryptography]
+passlib
+bcrypt

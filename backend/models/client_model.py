@@ -18,6 +18,7 @@ class Client(SQLModel, table=True):
     client_phone_number: str = Field(index=True, unique=True)
     client_business_name: str
     client_residence: str
+    password_hash: str
     date_of_birth: date
     next_of_kin_name: str
     next_of_kin_contact: str

@@ -60,6 +60,7 @@ class Client_Base(BaseModel):
     client_phone_number: str
     client_business_name: str
     client_residence: str
+    password: str
     date_of_birth: date
     next_of_kin_name: str
     next_of_kin_contact: str
