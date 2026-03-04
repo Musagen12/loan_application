@@ -113,6 +113,8 @@ class Client_Request(BaseModel):
     class Config:
         from_attributes = True
 
+class PasswordUpdate(BaseModel):
+    password: str
 
 # =========================
 # Guarantor Schemas

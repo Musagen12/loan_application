@@ -76,6 +76,28 @@ def create_client(client_data: client_schema.Client_Request, session: Session = 
 
 #     return client
 
+@router.patch("/{client_id}/password", response_model=client_schema.Client)
+def update_client_password(
+    client_id: str,
+    password_data: client_schema.PasswordUpdate,
+    session: Session = Depends(get_session)
+):
+    client = session.get(client_model.Client, client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    # update only password
+    client.password_hash = hash_password(password_data.password)
+
+    try:
+        session.commit()
+        session.refresh(client)
+    except Exception:
+        session.rollback()
+        raise HTTPException(status_code=500, detail="Failed to update password")
+
+    return client
+
 @router.put("/{client_id}", response_model=client_schema.Client)
 def update_client(client_id: str, client_update: client_schema.Client_Request, session: Session = Depends(get_session)):
     # Fetch client
