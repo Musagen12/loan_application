@@ -6,6 +6,7 @@ from core.database import get_session
 from sqlmodel import Session, select
 from models import client_model
 from schemas import client_schema
+from core.sending_sms import send_sms
 from typing import List
 import os
 import uuid
@@ -111,7 +112,7 @@ def create_guarantor(
         # Prepare SMS message
         sms_status = {"guarantor_sms": False}
         try:
-            message = f"Hello {guarantor.guarantor_name}, you have been added as a guarantor for {guarantor.client_name}'s account."
+            message = f"Hello {guarantor.guarantor_name}, you have been added as a guarantor for {guarantor.client.client_name}'s account."
             result = send_sms(guarantor.guarantor_phone_number, message)
             sms_status["guarantor_sms"] = result.get("status") != "failed"
         except Exception as e:
@@ -187,11 +188,34 @@ def update_guarantor(guarantor_id: str, guarantor_update: client_schema.Guaranto
 #     session.commit()
 #     return {"message": "Deleted Guarantor"}
 
+# @router.delete("/{guarantor_id}")
+# def delete_guarantor(guarantor_id: str, session: Session = Depends(get_session)):
+#     guarantor = session.get(client_model.Guarantor, guarantor_id)
+#     if not guarantor:
+#         raise HTTPException(status_code=404, detail="Guarantor not found")
+
+#     session.delete(guarantor)
+#     session.commit()
+
+#     # Send SMS to guarantor
+#     sms_status = {"guarantor_sms": False}
+#     try:
+#         message = f"Hello {guarantor.guarantor_name}, you have been removed as a guarantor for {guarantor.client.client_name}'s account."
+#         result = send_sms(guarantor.guarantor_phone_number, message)
+#         sms_status["guarantor_sms"] = result.get("status") != "failed"
+#     except Exception as e:
+#         print(f"Guarantor SMS failed: {str(e)}")
+
+#     return {"message": "Deleted guarantor", "sms_status": sms_status}
+
 @router.delete("/{guarantor_id}")
 def delete_guarantor(guarantor_id: str, session: Session = Depends(get_session)):
     guarantor = session.get(client_model.Guarantor, guarantor_id)
     if not guarantor:
         raise HTTPException(status_code=404, detail="Guarantor not found")
+
+    # Fetch related client name before deletion
+    client_name = guarantor.client.client_name if hasattr(guarantor, "client") else "the client"
 
     session.delete(guarantor)
     session.commit()
@@ -199,7 +223,7 @@ def delete_guarantor(guarantor_id: str, session: Session = Depends(get_session))
     # Send SMS to guarantor
     sms_status = {"guarantor_sms": False}
     try:
-        message = f"Hello {guarantor.guarantor_name}, you have been removed as a guarantor for {guarantor.client_name}'s account."
+        message = f"Hello {guarantor.guarantor_name}, you have been removed as a guarantor for {client_name}'s account."
         result = send_sms(guarantor.guarantor_phone_number, message)
         sms_status["guarantor_sms"] = result.get("status") != "failed"
     except Exception as e:
