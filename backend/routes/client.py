@@ -57,25 +57,6 @@ def create_client(client_data: client_schema.Client_Request, session: Session = 
 
     return client
 
-
-# @router.put("/{client_id}", response_model=client_schema.Client)
-# def update_client(client_id: str, client_update: client_schema.Client_Base, session: Session = Depends(get_session)):
-#     client = session.get(client_model.Client, client_id)
-#     if not client:
-#         raise HTTPException(status_code=404, detail="Client not found")
-
-#     for key, value in client_update.dict().items():
-#         setattr(client, key, value)
-
-#     try:
-#         session.commit()
-#         session.refresh(client)
-#     except IntegrityError:
-#         session.rollback()
-#         raise HTTPException(status_code=400, detail="Duplicate national ID number or other constraint violated")
-
-#     return client
-
 @router.patch("/{client_id}/password", response_model=client_schema.Client)
 def update_client_password(
     client_id: str,
