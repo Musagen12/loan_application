@@ -4,11 +4,7 @@ from enum import Enum
 from typing import Optional, List
 import re
 
-
-# =========================
 # Utility Functions
-# =========================
-
 def normalize_kenyan_phone(v: str) -> str:
     v = v.strip()
     v = re.sub(r"[ \-\(\)]", "", v)
@@ -39,21 +35,13 @@ def national_id_number_size(v: str) -> str:
         raise ValueError("The id number must be exactly 8 digits")
     return v
 
-
-# =========================
 # Enums
-# =========================
-
 class MaritalStatus(str, Enum):
     married = "married"
     single = "single"
     widowed = "widowed"
 
-
-# =========================
 # Client Schemas
-# =========================
-
 class Client_Base(BaseModel):
     client_name: str
     national_id_number: str
@@ -116,10 +104,7 @@ class Client_Request(BaseModel):
 class PasswordUpdate(BaseModel):
     password: str
 
-# =========================
 # Guarantor Schemas
-# =========================
-
 class Guarantor_Base(BaseModel):
     client_id: str
     guarantor_name: str
@@ -145,11 +130,7 @@ class Guarantor_Lite(BaseModel):
     guarantor_id: str
     guarantor_name: str
 
-
-# =========================
 # Photo Schemas
-# =========================
-
 class GuarantorBusinessPhotoBase(BaseModel):
     guarantor_id: str
     link: str
@@ -167,11 +148,7 @@ class GuarantorBusinessPhotoLite(BaseModel):
     image_id: str
     link: str
 
-
-# =========================
 # Full Response Schemas
-# =========================
-
 class Guarantor(Guarantor_Base):
     guarantor_id: str
     created_at: datetime

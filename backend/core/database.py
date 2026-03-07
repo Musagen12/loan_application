@@ -7,12 +7,6 @@ import os
 
 load_dotenv()
 
-# sqlite_file_name = "database.db"
-# sqlite_url = f"sqlite:///{sqlite_file_name}"
-
-# connect_args = {"check_same_thread": False}
-# engine = create_engine(sqlite_url, connect_args=connect_args)
-
 db_username = os.getenv("DB_USERNAME")
 db_password = os.getenv("DB_PASSWORD")
 db_name = os.getenv("DB_NAME")
