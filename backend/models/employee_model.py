@@ -2,13 +2,19 @@ from sqlmodel import SQLModel, Field
 from datetime import datetime, timezone, timedelta
 from uuid import uuid4
 from typing import Optional
+from enum import Enum
 
 EAT = timezone(timedelta(hours=3))
+
+class Employee_type(str, Enum):
+	admin = "admin"
+	regular = "regular"
 
 class Employee(SQLModel, table=True):
 	employee_id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True, index=True)
 	employee_name: str
 	employee_phone_number: str = Field(index=True, unique=True)
+	employee_type: Employee_type
 	password_hash: str
 
 	created_at: datetime = Field(default_factory=lambda: datetime.now(EAT))
