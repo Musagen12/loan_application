@@ -29,26 +29,26 @@ def normalize_kenyan_phone(v: str) -> str:
         raise ValueError(f"Invalid Kenyan phone number format or length: {v}")
 
 class Employee_type(str, Enum):
-	admin = "admin"
-	regular = "regular"
+    admin = "admin"
+    regular = "regular"
 
 class Employee_Base(BaseModel):
-	employee_name: str
-	employee_phone_number:str
-	employee_type: Employee_type
-	password_hash: str
+    employee_name: str
+    employee_phone_number:str
+    employee_type: Employee_type
+    password_hash: str
 
-	@field_validator("employee_phone_number")
+    @field_validator("employee_phone_number")
     @classmethod
     def validate_phone(cls, v):
         return normalize_kenyan_phone(v)
 
-	class Config:
-		from_attributes = True
+    class Config:
+        from_attributes = True
 
 class Employee(Employee_Base):
-	employee_id: str
-	created_at: datetime
+    employee_id: str
+    created_at: datetime
     updated_at: Optional[datetime]
 
     class Config:
