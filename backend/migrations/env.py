@@ -7,6 +7,7 @@ from alembic import context
 
 from models.client_model import Client, Guarantor, Guarantor_business_photos
 from models.refresh_token_model import RefreshToken
+from models.employee_model import Employee
 from dotenv import load_dotenv
 import os
 
