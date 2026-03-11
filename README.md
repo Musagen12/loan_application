@@ -211,5 +211,5 @@ This project is intended for **educational and development purposes**.
 ---
 
 <div align="center">
-  Made with ❤️ using <strong>FastAPI</strong> & <strong>SQLModel</strong>
+  Made using <strong>FastAPI</strong> & <strong>SQLModel</strong>
 </div>
