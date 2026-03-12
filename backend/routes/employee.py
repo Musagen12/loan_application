@@ -49,8 +49,7 @@ def create_employee(employee_data: employee_schema.Employee_Base, session:Sessio
     except Exception as e:
         print(f"employee SMS failed: {str(e)}")
 
-    # Return employee with SMS status
-    return {**employee.__dict__, "sms_status": sms_status}
+    return employee
 
 # Update password only
 @router.patch("/{employee_id}/password")
@@ -79,7 +78,7 @@ def update_employee_password(employee_id: str, password_data: employee_schema.Pa
     except Exception as e:
         print(f"SMS failed: {str(e)}")
 
-    return {**employee.__dict__, "sms_status": sms_status}
+    return {"Response": "Updated the password"}
 
 # Update Phone number only
 @router.patch("/{employee_id}/phone_number")
@@ -128,8 +127,4 @@ def update_employee_phone_number(
     except Exception as e:
         print(f"SMS failed: {str(e)}")
 
-    # safer than using __dict__
-    return {
-        **employee.model_dump(),
-        "sms_status": sms_status
-    }
+    return {"Response": "Updated the phone number"}

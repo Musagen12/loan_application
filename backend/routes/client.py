@@ -28,7 +28,7 @@ def get_client(client_id: str, session: Session = Depends(get_session)):
 
 
 # Create a client
-@router.post("/")
+@router.post("/", response_model=client_schema.Client)
 def create_client(client_data: client_schema.Client_Request, session: Session = Depends(get_session)):
     if client_data.next_of_kin_contact == client_data.client_phone_number:
         raise HTTPException(
@@ -71,8 +71,7 @@ def create_client(client_data: client_schema.Client_Request, session: Session = 
     except Exception as e:
         print(f"Next-of-kin SMS failed: {str(e)}")
 
-    return {**client.__dict__, "sms_status": sms_status}
-
+    return client
 
 # Update password only
 @router.patch("/{client_id}/password")
@@ -101,11 +100,11 @@ def update_client_password(client_id: str, password_data: client_schema.Password
     except Exception as e:
         print(f"Client SMS failed: {str(e)}")
 
-    return {**client.__dict__, "sms_status": sms_status}
+    return {"Response": "Updated the password"}
 
 
 # Update client
-@router.put("/{client_id}")
+@router.put("/{client_id}", response_model=client_schema.Client)
 def update_client(client_id: str, client_update: client_schema.Client_Request, session: Session = Depends(get_session)):
     client = session.get(client_model.Client, client_id)
     if not client:
@@ -160,7 +159,7 @@ def update_client(client_id: str, client_update: client_schema.Client_Request, s
         except Exception as e:
             print(f"Next-of-kin SMS failed: {str(e)}")
 
-    return {**client.__dict__, "sms_status": sms_status}
+    return client
 
 
 # Delete client
@@ -184,4 +183,4 @@ def delete_client(client_id: str, session: Session = Depends(get_session)):
     except Exception as e:
         print(f"Client SMS failed: {str(e)}")
 
-    return {"message": "Deleted client", "sms_status": sms_status}
+    return {"message": "Deleted client"}
