@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from core.database import get_session
+from core.security import hash_password
 from models import employee_model
 from schemas import employee_schema
 from sqlmodel import Session, select
@@ -19,9 +20,22 @@ def get_employees(session: Session = Depends(get_session)):
 
 @router.post("/", response_model=employee_schema.Employee)
 def create_employee(employee_data: employee_schema.Employee_Base, session:Session = Depends(get_session)):
-    employee = employee_model.Employee(**employee_data.model_dump())
+    statement = select(employee_model.Employee).where(
+        employee_model.Employee.employee_phone_number == employee_data.employee_phone_number
+    )
 
-    hashed_pw = hash_password(client_data.password)
+    phone_number = session.exec(statement).first()
+    if phone_number:
+        raise HTTPException(status_code=422, detail="Phone number has already been used.")
+
+    hashed_pw = hash_password(employee_data.password_hash)
+
+    employee = employee_model.Employee(
+            employee_name=employee_data.employee_name,
+            employee_phone_number=employee_data.employee_phone_number,
+            employee_type=employee_data.employee_type,
+            password_hash=hashed_pw
+        )
 
     session.add(employee)
     session.commit()
@@ -38,3 +52,4 @@ def create_employee(employee_data: employee_schema.Employee_Base, session:Sessio
 
     # Return employee with SMS status
     return {**employee.__dict__, "sms_status": sms_status}
+

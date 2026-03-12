@@ -46,8 +46,11 @@ class Employee_Base(BaseModel):
     class Config:
         from_attributes = True
 
-class Employee(Employee_Base):
+class Employee(BaseModel):
     employee_id: str
+    employee_name: str
+    employee_phone_number:str
+    employee_type: Employee_type
     created_at: datetime
     updated_at: Optional[datetime]
 
