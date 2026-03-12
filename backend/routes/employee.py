@@ -17,7 +17,6 @@ def get_employees(session: Session = Depends(get_session)):
 	employees = session.exec(select(employee_model.Employee)).all()
 	return employees
 
-
 @router.post("/", response_model=employee_schema.Employee)
 def create_employee(employee_data: employee_schema.Employee_Base, session:Session = Depends(get_session)):
     statement = select(employee_model.Employee).where(
@@ -53,3 +52,84 @@ def create_employee(employee_data: employee_schema.Employee_Base, session:Sessio
     # Return employee with SMS status
     return {**employee.__dict__, "sms_status": sms_status}
 
+# Update password only
+@router.patch("/{employee_id}/password")
+def update_employee_password(employee_id: str, password_data: employee_schema.PasswordUpdate, session: Session = Depends(get_session)):
+    employee = session.get(employee_model.Employee, employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    employee.password_hash = hash_password(password_data.password)
+
+    try:
+        session.commit()
+        session.refresh(employee)
+    except Exception:
+        session.rollback()
+        raise HTTPException(status_code=500, detail="Failed to update password")
+
+    # Send SMS to employee
+    sms_status = {"sms": False}
+    try:
+        result = send_sms(
+            employee.employee_phone_number,
+            f"Hello {employee.employee_name}, your password has been updated successfully."
+        )
+        sms_status["sms"] = result.get("status") != "failed"
+    except Exception as e:
+        print(f"SMS failed: {str(e)}")
+
+    return {**employee.__dict__, "sms_status": sms_status}
+
+# Update Phone number only
+@router.patch("/{employee_id}/phone_number")
+def update_employee_phone_number(
+    employee_id: str,
+    number_data: employee_schema.PhoneNumberUpdate,
+    session: Session = Depends(get_session)
+):
+    employee = session.get(employee_model.Employee, employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    statement = select(employee_model.Employee).where(
+        employee_model.Employee.employee_phone_number == number_data.phone_number
+    )
+
+    existing_employee = session.exec(statement).first()
+
+    if existing_employee and existing_employee.id != employee_id:
+        raise HTTPException(
+            status_code=422,
+            detail="Phone number already in use"
+        )
+
+    employee.employee_phone_number = number_data.phone_number
+
+    try:
+        session.add(employee)  # ensure SQLModel tracks the update
+        session.commit()
+        session.refresh(employee)
+    except Exception:
+        session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to update the phone number"
+        )
+
+    # Send SMS to employee
+    sms_status = {"sms": False}
+    try:
+        result = send_sms(
+            employee.employee_phone_number,
+            f"Hello {employee.employee_name}, your phone number has been updated successfully."
+        )
+        sms_status["sms"] = result.get("status") != "failed"
+    except Exception as e:
+        print(f"SMS failed: {str(e)}")
+
+    # safer than using __dict__
+    return {
+        **employee.model_dump(),
+        "sms_status": sms_status
+    }

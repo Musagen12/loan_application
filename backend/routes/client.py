@@ -12,7 +12,6 @@ router = APIRouter(
     tags=["Client routes"]
 )
 
-
 # Get all clients
 @router.get("/", response_model=list[client_schema.Client])
 def get_all_clients(session: Session = Depends(get_session)):
@@ -29,7 +28,7 @@ def get_client(client_id: str, session: Session = Depends(get_session)):
 
 
 # Create a client
-@router.post("/", response_model=client_schema.Client)
+@router.post("/")
 def create_client(client_data: client_schema.Client_Request, session: Session = Depends(get_session)):
     if client_data.next_of_kin_contact == client_data.client_phone_number:
         raise HTTPException(
@@ -76,7 +75,7 @@ def create_client(client_data: client_schema.Client_Request, session: Session = 
 
 
 # Update password only
-@router.patch("/{client_id}/password", response_model=client_schema.Client)
+@router.patch("/{client_id}/password")
 def update_client_password(client_id: str, password_data: client_schema.PasswordUpdate, session: Session = Depends(get_session)):
     client = session.get(client_model.Client, client_id)
     if not client:
@@ -106,7 +105,7 @@ def update_client_password(client_id: str, password_data: client_schema.Password
 
 
 # Update client
-@router.put("/{client_id}", response_model=client_schema.Client)
+@router.put("/{client_id}")
 def update_client(client_id: str, client_update: client_schema.Client_Request, session: Session = Depends(get_session)):
     client = session.get(client_model.Client, client_id)
     if not client:

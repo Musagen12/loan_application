@@ -56,3 +56,9 @@ class Employee(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PasswordUpdate(BaseModel):
+    password: str
+
+class PhoneNumberUpdate(BaseModel):
+    phone_number: str
