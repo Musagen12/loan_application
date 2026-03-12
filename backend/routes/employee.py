@@ -12,10 +12,19 @@ router = APIRouter(
 	tags=["Employee routes"]
 	)
 
+# Get all the employees
 @router.get("/", response_model=List[employee_schema.Employee])
 def get_employees(session: Session = Depends(get_session)):
 	employees = session.exec(select(employee_model.Employee)).all()
 	return employees
+
+# Get one employee based on the employee_id
+@router.get("/{employee_id}", response_model=employee_schema.Employee)
+def get_employee(employee_id: str, session: Session = Depends(get_session)):
+    employee = session.get(employee_model.Employee, employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return employee
 
 @router.post("/", response_model=employee_schema.Employee)
 def create_employee(employee_data: employee_schema.Employee_Base, session:Session = Depends(get_session)):
@@ -106,7 +115,7 @@ def update_employee_phone_number(
     employee.employee_phone_number = number_data.phone_number
 
     try:
-        session.add(employee)  # ensure SQLModel tracks the update
+        session.add(employee)
         session.commit()
         session.refresh(employee)
     except Exception:
@@ -128,3 +137,26 @@ def update_employee_phone_number(
         print(f"SMS failed: {str(e)}")
 
     return {"Response": "Updated the phone number"}
+
+# Delete employee
+@router.delete("/{employee_id}")
+def delete_employee(employee_id: str, session: Session = Depends(get_session)):
+    employee = session.get(employee_model.Employee, employee_id)
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    session.delete(employee)
+    session.commit()
+
+    # Send SMS to employee
+    sms_status = {"sms": False}
+    try:
+        result = send_sms(
+            employee.employee_phone_number,
+            f"Hello {employee.employee_name}, your account has been deleted."
+        )
+        sms_status["sms"] = result.get("status") != "failed"
+    except Exception as e:
+        print(f"SMS failed: {str(e)}")
+
+    return {"message": "Deleted employee"}
