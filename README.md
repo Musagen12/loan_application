@@ -19,7 +19,7 @@ Built with **FastAPI** · **SQLModel** · **PostgreSQL**
 
 - 👤 **Client Registration & Management** — Full borrower lifecycle support
 - 🤝 **Guarantor Management** — Track and notify guarantors automatically
-- 👨‍👩‍👧 **Next-of-Kin Tracking** — Maintain emergency contact records
+- 👨‍👩‍👧 **Next-of-Kin Tracking** — Maintain emergency contact records using 
 - 🔐 **Password Security** — Passwords hashed before storage
 - 📱 **Automatic SMS Notifications** — Real-time alerts for all key events
 - ⚡ **REST API with FastAPI** — High-performance async endpoints
