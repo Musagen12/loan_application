@@ -26,7 +26,6 @@ def get_client(client_id: str, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Client not found")
     return client
 
-
 # Create a client
 @router.post("/", response_model=client_schema.Client)
 def create_client(client_data: client_schema.Client_Request, session: Session = Depends(get_session)):
@@ -102,7 +101,6 @@ def update_client_password(client_id: str, password_data: client_schema.Password
 
     return {"Response": "Updated the password"}
 
-
 # Update client
 @router.put("/{client_id}", response_model=client_schema.Client)
 def update_client(client_id: str, client_update: client_schema.Client_Request, session: Session = Depends(get_session)):
@@ -160,7 +158,6 @@ def update_client(client_id: str, client_update: client_schema.Client_Request, s
             print(f"Next-of-kin SMS failed: {str(e)}")
 
     return client
-
 
 # Delete client
 @router.delete("/{client_id}")

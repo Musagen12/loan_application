@@ -32,7 +32,7 @@ Built with **FastAPI** · **SQLModel** · **PostgreSQL**
 | Layer | Technology |
 |-------|------------|
 | ⚡ Framework | FastAPI |
-| 🗄️ ORM | SQLModel / SQLAlchemy |
+| 🗄️ ORM | SQLModel |
 | 💾 Database | PostgreSQL / SQLite / MySQL |
 | 🌐 HTTP Client | httpx |
 | 🔐 Password Security | Hashing utility |
